@@ -44,7 +44,10 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
       setLoading(true);
       setError('');
 
-    await confirmSignUp({ username: email, confirmationCode: confirmCode });
+      await confirmSignUp({
+        username: email,
+        confirmationCode: confirmCode,
+      });
 
       setShowConfirm(false);
       setIsSignUp(false);
@@ -65,7 +68,10 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
       setLoading(true);
       setError('');
 
-    await signIn({ username: email, password: password });
+      await signIn({
+        username: email,
+        password: password,
+      });
 
       onLoginSuccess(email);
     } catch (err: any) {

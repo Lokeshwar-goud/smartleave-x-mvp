@@ -19,12 +19,10 @@ function App() {
 
   const initializeApp = async () => {
     try {
-      // Configure Amplify
       configureAmplify();
-
-      // Check if user is already logged in
       const user = await getCurrentUser();
       if (user) {
+        // For new Amplify version, username is the email
         setUserEmail(user.username);
         setCurrentView('dashboard');
       }
@@ -174,3 +172,5 @@ const styles = {
     color: 'white',
   } as React.CSSProperties,
 };
+
+export default App;
