@@ -35,7 +35,7 @@ def handler(event, context):
             item = response.get('Item')
             
             if item:
-                balance = item.get('balance', 20)
+                balance = float(item.get('balance', 20))  # Convert Decimal to float
             else:
                 # Default to 20 if no record
                 balance = 20

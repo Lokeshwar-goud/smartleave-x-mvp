@@ -49,7 +49,7 @@ export class SmartleaveXMvpStack extends cdk.Stack {
         email: true,
       },
     });
-
+    
     const userPoolClient = userPool.addClient('SmartLeaveClient', {
       userPoolClientName: 'smartleave-web-client',
       generateSecret: false,
@@ -79,7 +79,11 @@ export class SmartleaveXMvpStack extends cdk.Stack {
     lambdaRole.addToPrincipalPolicy(
       new cdk.aws_iam.PolicyStatement({
         effect: cdk.aws_iam.Effect.ALLOW,
-        actions: ['ses:SendEmail'],
+        actions: [
+          'ses:SendEmail',
+          'ses:SendRawEmail',
+          'ses:SendTemplatedEmail'
+        ],
         resources: ['*'],
       })
     );
@@ -151,7 +155,8 @@ export class SmartleaveXMvpStack extends cdk.Stack {
     const createLeaveUrl = createLeaveLambda.addFunctionUrl({
       cors: {
         allowedMethods: [cdk.aws_lambda.HttpMethod.POST],
-        allowedOrigins: ['*'],
+        allowedOrigins: ['http://localhost:3000'],
+        allowedHeaders: ['Content-Type', 'Authorization'],
       },
       authType: cdk.aws_lambda.FunctionUrlAuthType.NONE,
     });

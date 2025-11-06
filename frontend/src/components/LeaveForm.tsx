@@ -33,8 +33,21 @@ export const LeaveForm: React.FC<LeaveFormProps> = ({
       setError('');
       setSuccess('');
 
+      console.log('Sending leave request:', {
+        employee_email: userEmail,
+        approver_email: approverEmail,
+        start_date: startDate,
+        end_date: endDate,
+        reason: reason,
+      });
+
+      const createLeaveUrl = process.env.REACT_APP_CREATE_LEAVE_URL;
+      if (!createLeaveUrl) {
+        throw new Error('Create leave URL not configured');
+      }
+
       const response = await axios.post(
-        'https://5qcpamlbqz4wx2iytom4ijfwie0ejjzp.lambda-url.us-east-1.on.aws/',
+        createLeaveUrl,
         {
           employee_email: userEmail,
           approver_email: approverEmail,
@@ -48,6 +61,8 @@ export const LeaveForm: React.FC<LeaveFormProps> = ({
           },
         }
       );
+      
+      console.log('Response:', response.data);
 
       setSuccess('Leave application submitted successfully!');
       setStartDate('');
@@ -60,7 +75,23 @@ export const LeaveForm: React.FC<LeaveFormProps> = ({
         onSubmitSuccess();
       }, 2000);
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Failed to apply leave');
+      console.error('Error details:', err);
+      if (err.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.error('Response data:', err.response.data);
+        console.error('Response status:', err.response.status);
+        console.error('Response headers:', err.response.headers);
+        setError(err.response.data?.error || `Server error: ${err.response.status}`);
+      } else if (err.request) {
+        // The request was made but no response was received
+        console.error('Request made but no response received');
+        setError('No response from server. Please try again.');
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.error('Error setting up request:', err.message);
+        setError(`Error: ${err.message}`);
+      }
     } finally {
       setLoading(false);
     }

@@ -81,7 +81,7 @@ function App() {
               userEmail={userEmail}
               onApplyNewLeave={() => setCurrentView('apply-leave')}
             />
-            {userEmail === 'admin@smartleave.com' && (
+            {userEmail === 'dlokeshwargoud@gmail.com' && (
               <button 
                 onClick={() => setCurrentView('admin-dashboard')}
                 style={{ ...styles.adminButton }}
