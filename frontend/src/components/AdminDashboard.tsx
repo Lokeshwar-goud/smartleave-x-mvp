@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
+import { apiEndpoints } from '../amplify-config';
 // 1. Import the CSS module
 import styles from './AdminDashboard.module.css';
 
@@ -27,21 +28,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack }) => {
   const [filterStatus, setFilterStatus] = useState('all');
   const [searchEmail, setSearchEmail] = useState('');
 
-  useEffect(() => {
-    fetchAllLeaves();
-  }, []);
-
-  useEffect(() => {
-    filterLeaves();
-  }, [leaves, filterStatus, searchEmail]);
-
-  const fetchAllLeaves = async () => {
+  const fetchAllLeaves = useCallback(async () => {
     try {
       setLoading(true);
       setError('');
 
       const response = await axios.get(
-        'https://kupmf6cwzajwp4xhcb56bydwni0cdzpm.lambda-url.us-east-1.on.aws/'
+        process.env.REACT_APP_API_BASE_URL + '/get-all-leaves'
       );
 
       setLeaves(response.data);
@@ -51,9 +44,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const filterLeaves = () => {
+  useEffect(() => {
+    fetchAllLeaves();
+  }, [fetchAllLeaves]);
+
+  useEffect(() => {
     let filtered = leaves;
 
     // Filter by status
@@ -69,7 +66,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack }) => {
     }
 
     setFilteredLeaves(filtered);
-  };
+  }, [leaves, filterStatus, searchEmail]);
 
   // 2. Helper function to return a CSS class instead of a color
   const getStatusClass = (status: string) => {

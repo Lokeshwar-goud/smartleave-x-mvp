@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 // 1. Import the CSS module
 import styles from './Dashboard.module.css';
@@ -28,11 +28,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    fetchLeavesAndBalance();
-  }, [userEmail]); // Added userEmail as a dependency
-
-  const fetchLeavesAndBalance = async () => {
+  const fetchLeavesAndBalance = useCallback(async () => {
     try {
       setLoading(true);
       setError('');
@@ -67,7 +63,11 @@ export const Dashboard: React.FC<DashboardProps> = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, [userEmail]);
+
+  useEffect(() => {
+    fetchLeavesAndBalance();
+  }, [fetchLeavesAndBalance]);
 
   // 2. Helper function now returns a CSS class name
   const getStatusClass = (status: string) => {
@@ -86,9 +86,11 @@ export const Dashboard: React.FC<DashboardProps> = ({
     <div className={styles.container}>
       <div className={styles.header}>
         <h1 className={styles.headerTitle}>Leave Dashboard</h1>
-        <button onClick={onApplyNewLeave} className={styles.applyButton}>
-          + Apply New Leave
-        </button>
+        {userEmail !== 'dlokeshwargoud@gmail.com' && (
+          <button onClick={onApplyNewLeave} className={styles.applyButton}>
+            + Apply New Leave
+          </button>
+        )}
       </div>
 
       {error && <div className={styles.error}>{error}</div>}

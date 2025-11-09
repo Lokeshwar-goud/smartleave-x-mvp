@@ -22,11 +22,18 @@ function App() {
       configureAmplify();
       const user = await getCurrentUser();
       if (user) {
-        // For new Amplify version, username is the email
-        setUserEmail(user.username);
-        setCurrentView('dashboard');
+        const userEmail = user.username;
+        setUserEmail(userEmail);
+        if (userEmail === 'dlokeshwargoud@gmail.com') {
+          setCurrentView('admin-dashboard');
+        } else {
+          setCurrentView('dashboard');
+        }
+      } else {
+        setCurrentView('login');
       }
     } catch (err) {
+      console.error('Error initializing app:', err);
       setCurrentView('login');
     } finally {
       setLoading(false);
@@ -35,7 +42,11 @@ function App() {
 
   const handleLoginSuccess = (email: string) => {
     setUserEmail(email);
-    setCurrentView('dashboard');
+    if (email === 'dlokeshwargoud@gmail.com') {
+      setCurrentView('admin-dashboard');
+    } else {
+      setCurrentView('dashboard');
+    }
   };
 
   const handleLogout = async () => {
@@ -75,24 +86,14 @@ function App() {
           <Login onLoginSuccess={handleLoginSuccess} />
         )}
 
-        {currentView === 'dashboard' && (
-          <>
-            <Dashboard
-              userEmail={userEmail}
-              onApplyNewLeave={() => setCurrentView('apply-leave')}
-            />
-            {userEmail === 'dlokeshwargoud@gmail.com' && (
-              <button 
-                onClick={() => setCurrentView('admin-dashboard')}
-                style={{ ...styles.adminButton }}
-              >
-                📊 Admin Dashboard
-              </button>
-            )}
-          </>
+        {currentView === 'dashboard' && userEmail !== 'dlokeshwargoud@gmail.com' && (
+          <Dashboard
+            userEmail={userEmail}
+            onApplyNewLeave={() => setCurrentView('apply-leave')}
+          />
         )}
 
-        {currentView === 'apply-leave' && (
+        {currentView === 'apply-leave' && userEmail !== 'dlokeshwargoud@gmail.com' && (
           <LeaveForm
             userEmail={userEmail}
             onSubmitSuccess={() => setCurrentView('dashboard')}
@@ -100,8 +101,8 @@ function App() {
           />
         )}
 
-        {currentView === 'admin-dashboard' && (
-          <AdminDashboard onBack={() => setCurrentView('dashboard')} />
+        {currentView === 'admin-dashboard' && userEmail === 'dlokeshwargoud@gmail.com' && (
+          <AdminDashboard />
         )}
       </main>
     </div>

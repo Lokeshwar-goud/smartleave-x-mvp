@@ -108,7 +108,7 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
               type="text"
               placeholder="Full Name"
               value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFullName(e.target.value)}
               style={styles.input}
               required
             />
@@ -120,7 +120,7 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
                 type="email"
                 placeholder="Email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
                 style={styles.input}
                 required
               />
@@ -129,7 +129,7 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
                 type="password"
                 placeholder="Password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
                 style={styles.input}
                 required
               />
@@ -141,7 +141,7 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
               type="text"
               placeholder="Confirmation Code (from email)"
               value={confirmCode}
-              onChange={(e) => setConfirmCode(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfirmCode(e.target.value)}
               style={styles.input}
               required
             />
