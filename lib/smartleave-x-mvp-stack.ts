@@ -155,7 +155,7 @@ export class SmartleaveXMvpStack extends cdk.Stack {
     const createLeaveUrl = createLeaveLambda.addFunctionUrl({
       cors: {
         allowedMethods: [cdk.aws_lambda.HttpMethod.POST],
-        allowedOrigins: ['http://localhost:3000'],
+        allowedOrigins: ['*'],
         allowedHeaders: ['Content-Type', 'Authorization'],
       },
       authType: cdk.aws_lambda.FunctionUrlAuthType.NONE,

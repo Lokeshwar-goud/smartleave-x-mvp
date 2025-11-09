@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+// 1. Import the CSS module
+import styles from './LeaveForm.module.css';
+
+import { apiEndpoints } from '../amplify-config';
 
 interface LeaveFormProps {
   userEmail: string;
@@ -33,21 +37,8 @@ export const LeaveForm: React.FC<LeaveFormProps> = ({
       setError('');
       setSuccess('');
 
-      console.log('Sending leave request:', {
-        employee_email: userEmail,
-        approver_email: approverEmail,
-        start_date: startDate,
-        end_date: endDate,
-        reason: reason,
-      });
-
-      const createLeaveUrl = process.env.REACT_APP_CREATE_LEAVE_URL;
-      if (!createLeaveUrl) {
-        throw new Error('Create leave URL not configured');
-      }
-
       const response = await axios.post(
-        createLeaveUrl,
+        apiEndpoints.createLeave,
         {
           employee_email: userEmail,
           approver_email: approverEmail,
@@ -61,7 +52,7 @@ export const LeaveForm: React.FC<LeaveFormProps> = ({
           },
         }
       );
-      
+
       console.log('Response:', response.data);
 
       setSuccess('Leave application submitted successfully!');
@@ -77,18 +68,12 @@ export const LeaveForm: React.FC<LeaveFormProps> = ({
     } catch (err: any) {
       console.error('Error details:', err);
       if (err.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
         console.error('Response data:', err.response.data);
-        console.error('Response status:', err.response.status);
-        console.error('Response headers:', err.response.headers);
         setError(err.response.data?.error || `Server error: ${err.response.status}`);
       } else if (err.request) {
-        // The request was made but no response was received
         console.error('Request made but no response received');
         setError('No response from server. Please try again.');
       } else {
-        // Something happened in setting up the request that triggered an Error
         console.error('Error setting up request:', err.message);
         setError(`Error: ${err.message}`);
       }
@@ -98,77 +83,81 @@ export const LeaveForm: React.FC<LeaveFormProps> = ({
   };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.box}>
-        <h2 style={styles.title}>Apply for Leave</h2>
+    // 2. Use `className` instead of `style`
+    <div className={styles.container}>
+      <div className={styles.box}>
+        <h2 className={styles.title}>Apply for Leave</h2>
 
-        {error && <div style={styles.error}>{error}</div>}
-        {success && <div style={styles.success}>{success}</div>}
+        {error && <div className={styles.error}>{error}</div>}
+        {success && <div className={styles.success}>{success}</div>}
 
         <form onSubmit={handleSubmit}>
-          <div style={styles.formGroup}>
-            <label style={styles.label}>Your Email:</label>
+          <div className={styles.formGroup}>
+            <label className={styles.label}>Your Email:</label>
             <input
               type="email"
               value={userEmail}
               disabled
-              style={{ ...styles.input, backgroundColor: '#f5f5f5' }}
+              // 3. Combine classes for special cases
+              className={`${styles.input} ${styles.disabledInput}`}
             />
           </div>
 
-          <div style={styles.formGroup}>
-            <label style={styles.label}>Approver Email:</label>
+          <div className={styles.formGroup}>
+            <label className={styles.label}>Approver Email:</label>
             <input
               type="email"
               placeholder="Approver email"
               value={approverEmail}
               onChange={(e) => setApproverEmail(e.target.value)}
-              style={styles.input}
+              className={styles.input}
               required
             />
           </div>
 
-          <div style={styles.formGroup}>
-            <label style={styles.label}>Start Date:</label>
+          <div className={styles.formGroup}>
+            <label className={styles.label}>Start Date:</label>
             <input
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              style={styles.input}
+              className={styles.input}
               required
             />
           </div>
 
-          <div style={styles.formGroup}>
-            <label style={styles.label}>End Date:</label>
+          <div className={styles.formGroup}>
+            <label className={styles.label}>End Date:</label>
             <input
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              style={styles.input}
+              className={styles.input}
               required
             />
           </div>
 
-          <div style={styles.formGroup}>
-            <label style={styles.label}>Reason:</label>
+          <div className={styles.formGroup}>
+            <label className={styles.label}>Reason:</label>
             <textarea
               placeholder="Reason for leave"
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              style={{ ...styles.input, minHeight: '100px' }}
+              // 3. Combine classes for special cases
+              className={`${styles.input} ${styles.textarea}`}
               required
             />
           </div>
 
-          <button type="submit" disabled={loading} style={styles.button}>
+          <button type="submit" disabled={loading} className={styles.button}>
             {loading ? 'Applying...' : 'Apply for Leave'}
           </button>
 
           <button
             type="button"
             onClick={onBack}
-            style={{ ...styles.button, background: '#a6a6a6' }}
+            // 3. Combine classes for special cases
+            className={`${styles.button} ${styles.backButton}`}
           >
             Back to Dashboard
           </button>
@@ -176,65 +165,4 @@ export const LeaveForm: React.FC<LeaveFormProps> = ({
       </div>
     </div>
   );
-};
-
-const styles = {
-  container: {
-    padding: '40px 20px',
-    maxWidth: '600px',
-    margin: '0 auto',
-  } as React.CSSProperties,
-  box: {
-    background: 'white',
-    padding: '40px',
-    borderRadius: '8px',
-    boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)',
-  } as React.CSSProperties,
-  title: {
-    color: '#333',
-    marginBottom: '30px',
-    textAlign: 'center',
-  } as React.CSSProperties,
-  formGroup: {
-    marginBottom: '20px',
-  } as React.CSSProperties,
-  label: {
-    display: 'block',
-    marginBottom: '8px',
-    color: '#333',
-    fontWeight: '500',
-  } as React.CSSProperties,
-  input: {
-    width: '100%',
-    padding: '10px',
-    border: '1px solid #ddd',
-    borderRadius: '4px',
-    fontSize: '14px',
-    boxSizing: 'border-box',
-  } as React.CSSProperties,
-  button: {
-    width: '100%',
-    padding: '12px',
-    background: '#667eea',
-    color: 'white',
-    border: 'none',
-    borderRadius: '4px',
-    fontSize: '16px',
-    cursor: 'pointer',
-    marginTop: '10px',
-  } as React.CSSProperties,
-  error: {
-    background: '#ff6b6b',
-    color: 'white',
-    padding: '12px',
-    borderRadius: '4px',
-    marginBottom: '20px',
-  } as React.CSSProperties,
-  success: {
-    background: '#51cf66',
-    color: 'white',
-    padding: '12px',
-    borderRadius: '4px',
-    marginBottom: '20px',
-  } as React.CSSProperties,
 };
